@@ -4,740 +4,720 @@
   <title>Blob Pet - Watchtower Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body { 
-      background: #0a0a0a; 
-      color: #fafafa;
-      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      font-family: 'Press Start 2P', monospace;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
       padding: 20px;
     }
     
-    .container {
-      max-width: 400px;
-      width: 100%;
-    }
-    
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    header h1 {
-      font-size: 28px;
-      margin-bottom: 4px;
-    }
-    header .subtitle {
-      color: #71717a;
-      font-size: 14px;
-    }
-    
-    /* Pet Display */
-    .pet-area {
-      background: #18181b;
-      border: 2px solid #27272a;
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    
-    .pet-container {
-      position: relative;
-      width: 160px;
-      height: 160px;
-      margin: 0 auto 16px;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-    .pet-container:active {
-      transform: scale(0.95);
-    }
-    
-    .blob {
-      width: 100%;
-      height: 100%;
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      position: relative;
-      animation: blobFloat 3s ease-in-out infinite;
-      transition: all 0.3s;
-    }
-    
-    .blob.happy {
-      animation: blobBounce 0.5s ease-in-out;
-    }
-    
-    /* Evolution stages affect size and shape */
-    .blob.stage-1 { transform: scale(0.5); border-radius: 50%; }
-    .blob.stage-2 { transform: scale(0.65); }
-    .blob.stage-3 { transform: scale(0.8); }
-    .blob.stage-4 { transform: scale(0.9); }
-    .blob.stage-5 { transform: scale(1.0); border-radius: 45% 55% 50% 50% / 55% 55% 45% 45%; }
-    .blob.stage-6 { 
-      transform: scale(1.1); 
-      border-radius: 40% 60% 55% 45% / 50% 50% 50% 50%;
-      box-shadow: 0 0 40px currentColor;
-    }
-    
-    .blob-face {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 32px;
-      user-select: none;
-    }
-    
-    .blob.stage-5 .blob-face,
-    .blob.stage-6 .blob-face { font-size: 40px; }
-    
-    @keyframes blobFloat {
-      0%, 100% { transform: translateY(0) scale(var(--scale, 1)); }
-      50% { transform: translateY(-8px) scale(var(--scale, 1)); }
-    }
-    
-    @keyframes blobBounce {
-      0%, 100% { transform: scale(var(--scale, 1)); }
-      50% { transform: scale(calc(var(--scale, 1) * 1.2)); }
-    }
-    
-    .pet-name {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-    .pet-level {
-      color: #10b981;
-      font-size: 14px;
-    }
-    
-    .click-hint {
-      color: #52525b;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-    
-    /* Stats */
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    
-    .stat {
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      padding: 12px;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: #71717a;
-      margin-bottom: 4px;
-    }
-    .stat-bar {
-      height: 8px;
-      background: #27272a;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .stat-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
-    .stat-fill.hunger { background: #f97316; }
-    .stat-fill.happiness { background: #ec4899; }
-    .stat-fill.low { background: #ef4444; }
-    
-    /* Currency */
-    .currency {
-      background: linear-gradient(135deg, #18181b 0%, #1c1c1f 100%);
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .coins {
-      font-size: 32px;
-      font-weight: bold;
-      color: #fbbf24;
-    }
-    .coins-label {
-      font-size: 12px;
-      color: #71717a;
-    }
-    .xp-bar {
-      margin-top: 12px;
-    }
-    .xp-label {
-      font-size: 12px;
-      color: #71717a;
-      margin-bottom: 4px;
+    .game-container {
       display: flex;
-      justify-content: space-between;
-    }
-    .xp-track {
-      height: 6px;
-      background: #27272a;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .xp-fill {
-      height: 100%;
-      background: #10b981;
-      border-radius: 3px;
-      transition: width 0.3s;
+      gap: 16px;
+      max-width: 700px;
     }
     
-    /* Actions */
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* Left sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
-      margin-bottom: 16px;
+      width: 120px;
     }
     
     .action-btn {
-      background: #18181b;
-      border: 2px solid #27272a;
-      border-radius: 12px;
-      padding: 16px 12px;
-      color: #fafafa;
-      font-size: 14px;
-      font-weight: 500;
+      background: #16213e;
+      border: 3px solid #0f3460;
+      padding: 12px 8px;
+      color: #eee;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
       cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      text-align: center;
+      transition: all 0.1s;
+      image-rendering: pixelated;
     }
     .action-btn:hover:not(:disabled) {
+      background: #0f3460;
       border-color: #10b981;
-      background: #10b98110;
+    }
+    .action-btn:active:not(:disabled) {
+      transform: scale(0.95);
     }
     .action-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.4;
       cursor: not-allowed;
     }
     .action-btn .icon {
-      font-size: 24px;
+      font-size: 20px;
+      display: block;
+      margin-bottom: 6px;
     }
     .action-btn .cost {
-      font-size: 11px;
+      font-size: 6px;
       color: #fbbf24;
+      margin-top: 4px;
     }
     
-    /* Customize */
-    .customize {
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .customize-label {
-      font-size: 12px;
-      color: #71717a;
-      margin-bottom: 8px;
-    }
-    .color-picker {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .color-option {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid transparent;
-      transition: all 0.15s;
-    }
-    .color-option:hover {
-      transform: scale(1.1);
-    }
-    .color-option.selected {
-      border-color: white;
-    }
-    
-    /* Save indicator */
-    .save-status {
-      text-align: center;
-      font-size: 12px;
-      color: #52525b;
+    .color-section {
+      background: #16213e;
+      border: 3px solid #0f3460;
       padding: 8px;
     }
-    .save-status.saving { color: #fbbf24; }
-    .save-status.saved { color: #10b981; }
+    .color-section label {
+      font-size: 6px;
+      display: block;
+      margin-bottom: 6px;
+      color: #888;
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+    .color-opt {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #0f3460;
+      cursor: pointer;
+      image-rendering: pixelated;
+    }
+    .color-opt:hover { border-color: #fff; }
+    .color-opt.selected { border-color: #10b981; }
     
-    /* Floating coins animation */
-    .floating-coin {
-      position: fixed;
+    /* Main game screen */
+    .game-screen {
+      background: #16213e;
+      border: 4px solid #0f3460;
+      padding: 12px;
+    }
+    
+    .screen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #0f3460;
+    }
+    .pet-name-display {
+      font-size: 10px;
+      color: #10b981;
+    }
+    .level-display {
+      font-size: 8px;
+      color: #888;
+    }
+    
+    /* The gameboy-style viewport */
+    .viewport {
+      width: 320px;
+      height: 240px;
+      background: #c4cfa1;
+      border: 4px solid #8b956d;
+      position: relative;
+      overflow: hidden;
+      image-rendering: pixelated;
+      cursor: pointer;
+    }
+    
+    /* Pixel blob */
+    .blob {
+      position: absolute;
+      width: 48px;
+      height: 40px;
+      transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+    }
+    
+    .blob-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 32px;
+      border-radius: 50% 50% 45% 45%;
+      animation: blobIdle 1s ease-in-out infinite;
+    }
+    
+    .blob-eye {
+      position: absolute;
+      width: 8px;
+      height: 10px;
+      background: #1a1a2e;
+      border-radius: 50%;
+      top: 8px;
+    }
+    .blob-eye.left { left: 8px; }
+    .blob-eye.right { right: 8px; }
+    
+    .blob-eye-shine {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 1px;
+    }
+    
+    .blob-mouth {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 3px;
+      background: #1a1a2e;
+      border-radius: 0 0 6px 6px;
+    }
+    
+    /* Blob states */
+    .blob.eating .blob-mouth {
+      width: 10px;
+      height: 8px;
+      border-radius: 50%;
+      animation: munch 0.3s ease-in-out infinite;
+    }
+    
+    .blob.playing {
+      animation: bounce 0.4s ease-in-out infinite;
+    }
+    
+    .blob.happy .blob-mouth {
+      width: 12px;
+      height: 6px;
+      border-radius: 0 0 12px 12px;
+    }
+    
+    /* Evolution sizes */
+    .blob.stage-1 { transform: scale(0.7); }
+    .blob.stage-2 { transform: scale(0.85); }
+    .blob.stage-3 { transform: scale(1); }
+    .blob.stage-4 { transform: scale(1.15); }
+    .blob.stage-5 { transform: scale(1.3); }
+    .blob.stage-6 { transform: scale(1.5); }
+    
+    @keyframes blobIdle {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(0.92); }
+    }
+    
+    @keyframes munch {
+      0%, 100% { transform: translateX(-50%) scaleY(1); }
+      50% { transform: translateX(-50%) scaleY(0.5); }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    /* Click feedback */
+    .coin-popup {
+      position: absolute;
+      font-size: 10px;
+      color: #1a1a2e;
+      font-family: 'Press Start 2P', monospace;
       pointer-events: none;
-      font-size: 20px;
-      animation: floatUp 1s ease-out forwards;
-      z-index: 100;
-    }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-60px); }
+      animation: coinFloat 0.8s ease-out forwards;
     }
     
-    /* Evolution popup */
-    .evolution-popup {
+    @keyframes coinFloat {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-30px); }
+    }
+    
+    /* Stats bar below viewport */
+    .stats-bar {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 2px solid #0f3460;
+    }
+    
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 6px;
+      width: 50px;
+      color: #888;
+    }
+    .stat-track {
+      flex: 1;
+      height: 12px;
+      background: #0f3460;
+      border: 2px solid #0a0a1a;
+    }
+    .stat-fill {
+      height: 100%;
+      transition: width 0.3s;
+    }
+    .stat-fill.coins { background: #fbbf24; }
+    .stat-fill.xp { background: #10b981; }
+    .stat-value {
+      font-size: 8px;
+      width: 60px;
+      text-align: right;
+    }
+    
+    .level-up-hint {
+      font-size: 6px;
+      color: #10b981;
+      text-align: center;
+      margin-top: 4px;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 8px;
+      font-size: 6px;
+      color: #444;
+      text-align: center;
+    }
+    .footer a { color: #10b981; text-decoration: none; }
+    
+    .save-indicator {
+      font-size: 6px;
+      color: #444;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .save-indicator.saving { color: #fbbf24; }
+    .save-indicator.saved { color: #10b981; }
+    
+    /* Onboarding modal */
+    .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.9);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
-    .evolution-popup.show {
-      display: flex;
-      animation: fadeIn 0.3s;
-    }
-    .evolution-content {
-      background: #18181b;
-      border: 2px solid #10b981;
-      border-radius: 16px;
-      padding: 32px;
+    .modal.show { display: flex; }
+    
+    .modal-content {
+      background: #16213e;
+      border: 4px solid #10b981;
+      padding: 24px;
       text-align: center;
-      animation: scaleIn 0.3s;
+      max-width: 300px;
     }
-    .evolution-content h2 {
+    .modal-content h2 {
+      font-size: 12px;
+      margin-bottom: 16px;
       color: #10b981;
+    }
+    .modal-content p {
+      font-size: 8px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 12px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      background: #0f3460;
+      border: 3px solid #10b981;
+      color: #fff;
+      text-align: center;
       margin-bottom: 16px;
     }
-    .evolution-content .new-stage {
-      font-size: 64px;
-      margin: 16px 0;
+    .modal-content input::placeholder {
+      color: #666;
     }
-    .evolution-content button {
+    .modal-content button {
       background: #10b981;
-      color: #000;
       border: none;
       padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: #000;
       cursor: pointer;
-      margin-top: 16px;
+    }
+    .modal-content button:hover {
+      background: #34d399;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    /* Level up modal */
+    .level-up-modal .modal-content {
+      border-color: #fbbf24;
     }
-    @keyframes scaleIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    .level-up-modal h2 {
+      color: #fbbf24 !important;
     }
-    
-    /* Powered by */
-    .powered-by {
-      margin-top: 24px;
-      text-align: center;
-      font-size: 12px;
-      color: #52525b;
-    }
-    .powered-by a {
-      color: #10b981;
-      text-decoration: none;
+    .level-up-modal .new-level {
+      font-size: 32px;
+      margin: 16px 0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🫧 Blob Pet</h1>
-      <p class="subtitle">Raise your blob • Powered by Watchtower</p>
-    </header>
-    
-    <div class="pet-area">
-      <div class="pet-container" id="pet" onclick="clickPet()">
-        <div class="blob stage-1" id="blob">
-          <span class="blob-face" id="face">😊</span>
-        </div>
-      </div>
-      <div class="pet-name" id="pet-name">Blobby</div>
-      <div class="pet-level" id="pet-level">Stage 1 • Level 1</div>
-      <div class="click-hint">Tap blob for coins!</div>
-    </div>
-    
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">🍎 Hunger</div>
-        <div class="stat-bar">
-          <div class="stat-fill hunger" id="hunger-bar" style="width: 100%"></div>
-        </div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">💖 Happiness</div>
-        <div class="stat-bar">
-          <div class="stat-fill happiness" id="happiness-bar" style="width: 100%"></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="currency">
-      <div class="coins" id="coins">0</div>
-      <div class="coins-label">coins</div>
-      <div class="xp-bar">
-        <div class="xp-label">
-          <span>XP</span>
-          <span id="xp-text">0 / 100</span>
-        </div>
-        <div class="xp-track">
-          <div class="xp-fill" id="xp-bar" style="width: 0%"></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="actions">
-      <button class="action-btn" onclick="feed()" id="feed-btn">
+  <div class="game-container">
+    <!-- Left sidebar -->
+    <div class="sidebar">
+      <button class="action-btn" id="feed-btn" onclick="feed()">
         <span class="icon">🍎</span>
-        <span>Feed</span>
-        <span class="cost">10 coins</span>
+        Feed
+        <span class="cost" id="feed-cost">5 coins</span>
       </button>
-      <button class="action-btn" onclick="play()" id="play-btn">
+      
+      <button class="action-btn" id="play-btn" onclick="play()">
         <span class="icon">🎾</span>
-        <span>Play</span>
-        <span class="cost">15 coins</span>
+        Play
+        <span class="cost" id="play-cost">10 coins</span>
       </button>
-      <button class="action-btn" onclick="treat()" id="treat-btn">
-        <span class="icon">🍰</span>
-        <span>Treat</span>
-        <span class="cost">25 coins</span>
-      </button>
-      <button class="action-btn" onclick="sparkle()" id="sparkle-btn">
-        <span class="icon">✨</span>
-        <span>Sparkle</span>
-        <span class="cost">50 coins</span>
-      </button>
+      
+      <div class="color-section">
+        <label>COLOR</label>
+        <div class="color-grid" id="color-grid"></div>
+      </div>
     </div>
     
-    <div class="customize">
-      <div class="customize-label">Blob Color</div>
-      <div class="color-picker" id="color-picker"></div>
-    </div>
-    
-    <div class="save-status" id="save-status">Connecting...</div>
-    
-    <div class="powered-by">
-      Cloud saves by <a href="https://watchtower.host" target="_blank">Watchtower</a>
+    <!-- Main screen -->
+    <div class="game-screen">
+      <div class="screen-header">
+        <div class="pet-name-display" id="pet-name">BLOBBY</div>
+        <div class="level-display">LV.<span id="level-num">1</span></div>
+      </div>
+      
+      <div class="viewport" id="viewport" onclick="clickBlob(event)">
+        <div class="blob stage-1" id="blob">
+          <div class="blob-body" id="blob-body">
+            <div class="blob-eye left"><div class="blob-eye-shine"></div></div>
+            <div class="blob-eye right"><div class="blob-eye-shine"></div></div>
+            <div class="blob-mouth"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stats-bar">
+        <div class="stat-row">
+          <span class="stat-label">COINS</span>
+          <div class="stat-track">
+            <div class="stat-fill coins" id="coins-bar" style="width: 0%"></div>
+          </div>
+          <span class="stat-value" id="coins-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">XP</span>
+          <div class="stat-track">
+            <div class="stat-fill xp" id="xp-bar" style="width: 0%"></div>
+          </div>
+          <span class="stat-value" id="xp-value">0/100</span>
+        </div>
+        <div class="level-up-hint" id="level-hint"></div>
+      </div>
+      
+      <div class="save-indicator" id="save-status">CONNECTING...</div>
+      <div class="footer">
+        CLOUD SAVES BY <a href="https://watchtower.host" target="_blank">WATCHTOWER</a>
+      </div>
     </div>
   </div>
   
-  <div class="evolution-popup" id="evolution-popup">
-    <div class="evolution-content">
-      <h2>✨ EVOLUTION! ✨</h2>
-      <div>Your blob evolved to</div>
-      <div class="new-stage" id="new-stage-emoji">🫧</div>
-      <div id="new-stage-name">Stage 2</div>
-      <button onclick="closeEvolution()">Awesome!</button>
+  <!-- Name modal -->
+  <div class="modal" id="name-modal">
+    <div class="modal-content">
+      <h2>NEW BLOB!</h2>
+      <p>A WILD BLOB APPEARED! GIVE IT A NAME:</p>
+      <input type="text" id="name-input" placeholder="BLOBBY" maxlength="10" autocomplete="off">
+      <button onclick="submitName()">START</button>
+    </div>
+  </div>
+  
+  <!-- Level up modal -->
+  <div class="modal level-up-modal" id="levelup-modal">
+    <div class="modal-content">
+      <h2>LEVEL UP!</h2>
+      <div class="new-level" id="new-level">🎉</div>
+      <p id="levelup-text">YOUR BLOB GREW!</p>
+      <button onclick="closeLevelUp()">NICE!</button>
     </div>
   </div>
 
   <script type="module">
     import { connect } from 'https://esm.sh/@watchtower-sdk/core@0.5.0'
-
-    // Colors
-    const COLORS = [
-      '#10b981', // emerald (default)
-      '#3b82f6', // blue
-      '#8b5cf6', // purple
-      '#ec4899', // pink
-      '#f97316', // orange
-      '#eab308', // yellow
-      '#ef4444', // red
-      '#06b6d4', // cyan
-    ]
     
-    // Evolution stages
-    const STAGES = [
-      { level: 1, name: 'Tiny Blob', emoji: '🫧', face: '😊' },
-      { level: 5, name: 'Small Blob', emoji: '🟢', face: '😄' },
-      { level: 10, name: 'Blob', emoji: '🔵', face: '😁' },
-      { level: 20, name: 'Big Blob', emoji: '🟣', face: '🥰' },
-      { level: 35, name: 'Mega Blob', emoji: '⭐', face: '😎' },
-      { level: 50, name: 'Ultra Blob', emoji: '👑', face: '🤩' },
-    ]
+    const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#eab308', '#ef4444', '#06b6d4']
+    const STAGES = [1, 5, 10, 20, 35, 50] // Level thresholds for each stage
+    const STAGE_NAMES = ['BABY', 'SMALL', 'MEDIUM', 'BIG', 'HUGE', 'MEGA']
     
-    // Game state
     let state = {
+      name: '',
       coins: 0,
       xp: 0,
       level: 1,
-      hunger: 100,
-      happiness: 100,
       color: COLORS[0],
-      lastUpdate: Date.now()
+      totalClicks: 0
     }
     
     let room = null
+    let blobX = 140, blobY = 100
+    let targetX = 140, targetY = 100
+    
     const playerId = localStorage.getItem('blobPetId') || crypto.randomUUID()
     localStorage.setItem('blobPetId', playerId)
     
-    // DOM elements
+    // DOM
     const blob = document.getElementById('blob')
-    const face = document.getElementById('face')
-    const coinsEl = document.getElementById('coins')
-    const xpBar = document.getElementById('xp-bar')
-    const xpText = document.getElementById('xp-text')
-    const hungerBar = document.getElementById('hunger-bar')
-    const happinessBar = document.getElementById('happiness-bar')
-    const petLevel = document.getElementById('pet-level')
-    const saveStatus = document.getElementById('save-status')
-    const colorPicker = document.getElementById('color-picker')
+    const blobBody = document.getElementById('blob-body')
+    const viewport = document.getElementById('viewport')
     
     // Initialize
     async function init() {
-      setupColorPicker()
+      setupColors()
       
       try {
-        room = await connect('blob-pet-saves', {
-          name: 'player',
-          gameId: 'blob-pet'
-        })
+        room = await connect('blob-pet-saves', { gameId: 'blob-pet' })
         
-        // Try to load saved state
         const saved = await room.load('pet')
         if (saved) {
           state = { ...state, ...saved }
-          // Calculate stat decay since last play
-          const elapsed = (Date.now() - state.lastUpdate) / 1000 / 60 // minutes
-          state.hunger = Math.max(0, state.hunger - elapsed * 0.5)
-          state.happiness = Math.max(0, state.happiness - elapsed * 0.3)
+          updateUI()
+          showSave('saved', 'LOADED!')
+        } else {
+          // First time - show name modal
+          document.getElementById('name-modal').classList.add('show')
         }
         
-        updateUI()
-        showSaveStatus('saved', 'Pet loaded!')
-        
-        // Auto-save every 30 seconds
+        // Auto-save
         setInterval(saveGame, 30000)
         
-        // Decay stats over time
-        setInterval(() => {
-          state.hunger = Math.max(0, state.hunger - 0.1)
-          state.happiness = Math.max(0, state.happiness - 0.05)
-          state.lastUpdate = Date.now()
-          updateUI()
-        }, 1000)
-        
       } catch (e) {
-        console.error('Failed to connect:', e)
-        showSaveStatus('error', 'Offline mode')
+        console.error('Connection failed:', e)
+        showSave('error', 'OFFLINE')
+        // Still allow play offline
+        if (!state.name) {
+          document.getElementById('name-modal').classList.add('show')
+        }
       }
+      
+      updateUI()
+      
+      // Blob wanders around
+      setInterval(wanderBlob, 2000)
+      moveBlob()
     }
     
-    function setupColorPicker() {
-      colorPicker.innerHTML = COLORS.map(c => `
-        <div class="color-option ${c === state.color ? 'selected' : ''}" 
-             style="background: ${c}" 
-             data-color="${c}"
-             onclick="selectColor('${c}')"></div>
-      `).join('')
+    function setupColors() {
+      const grid = document.getElementById('color-grid')
+      grid.innerHTML = COLORS.map(c => 
+        `<div class="color-opt ${c === state.color ? 'selected' : ''}" 
+              style="background:${c}" 
+              data-color="${c}"
+              onclick="selectColor('${c}')"></div>`
+      ).join('')
     }
     
     window.selectColor = (color) => {
       state.color = color
-      document.querySelectorAll('.color-option').forEach(el => {
+      document.querySelectorAll('.color-opt').forEach(el => {
         el.classList.toggle('selected', el.dataset.color === color)
       })
+      blobBody.style.background = color
+      saveGame()
+    }
+    
+    window.submitName = () => {
+      const input = document.getElementById('name-input')
+      state.name = (input.value.trim() || 'BLOBBY').toUpperCase()
+      document.getElementById('name-modal').classList.remove('show')
       updateUI()
       saveGame()
     }
     
-    function updateUI() {
-      // Update blob appearance
-      const stage = getStage()
-      blob.className = `blob stage-${stage}`
-      blob.style.background = state.color
-      blob.style.setProperty('--scale', [0.5, 0.65, 0.8, 0.9, 1.0, 1.1][stage - 1])
-      
-      // Face based on stats
-      if (state.hunger < 20 || state.happiness < 20) {
-        face.textContent = '😢'
-      } else if (state.hunger < 50 || state.happiness < 50) {
-        face.textContent = '😐'
-      } else {
-        face.textContent = STAGES[stage - 1].face
-      }
-      
-      // Stats
-      coinsEl.textContent = Math.floor(state.coins)
-      
-      const xpNeeded = getXpNeeded()
-      const xpProgress = (state.xp / xpNeeded) * 100
-      xpBar.style.width = xpProgress + '%'
-      xpText.textContent = `${Math.floor(state.xp)} / ${xpNeeded}`
-      
-      hungerBar.style.width = state.hunger + '%'
-      hungerBar.classList.toggle('low', state.hunger < 30)
-      
-      happinessBar.style.width = state.happiness + '%'
-      happinessBar.classList.toggle('low', state.happiness < 30)
-      
-      petLevel.textContent = `${STAGES[stage - 1].name} • Level ${state.level}`
-      
-      // Button states
-      document.getElementById('feed-btn').disabled = state.coins < 10
-      document.getElementById('play-btn').disabled = state.coins < 15
-      document.getElementById('treat-btn').disabled = state.coins < 25
-      document.getElementById('sparkle-btn').disabled = state.coins < 50
+    function wanderBlob() {
+      targetX = 20 + Math.random() * 240
+      targetY = 20 + Math.random() * 160
     }
     
-    function getStage() {
-      for (let i = STAGES.length - 1; i >= 0; i--) {
-        if (state.level >= STAGES[i].level) return i + 1
-      }
-      return 1
-    }
-    
-    function getXpNeeded() {
-      return Math.floor(100 * Math.pow(1.2, state.level - 1))
-    }
-    
-    function addXp(amount) {
-      // Bonus XP for high stats
-      const bonus = (state.hunger > 80 && state.happiness > 80) ? 1.5 : 1
-      state.xp += amount * bonus
+    function moveBlob() {
+      // Smooth movement toward target
+      blobX += (targetX - blobX) * 0.05
+      blobY += (targetY - blobY) * 0.05
       
-      const xpNeeded = getXpNeeded()
-      const oldStage = getStage()
+      blob.style.left = blobX + 'px'
+      blob.style.top = blobY + 'px'
       
-      while (state.xp >= xpNeeded) {
-        state.xp -= xpNeeded
-        state.level++
-        
-        const newStage = getStage()
-        if (newStage > oldStage) {
-          showEvolution(newStage)
-        }
-      }
+      requestAnimationFrame(moveBlob)
     }
     
-    function showEvolution(stage) {
-      const stageInfo = STAGES[stage - 1]
-      document.getElementById('new-stage-emoji').textContent = stageInfo.emoji
-      document.getElementById('new-stage-name').textContent = stageInfo.name
-      document.getElementById('evolution-popup').classList.add('show')
-    }
-    
-    window.closeEvolution = () => {
-      document.getElementById('evolution-popup').classList.remove('show')
-    }
-    
-    window.clickPet = () => {
-      // Coins based on level and stats
-      const base = 1 + Math.floor(state.level / 5)
-      const bonus = (state.hunger > 50 && state.happiness > 50) ? 2 : 1
-      const earned = base * bonus
+    window.clickBlob = (e) => {
+      const rect = viewport.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
       
+      // More coins at higher levels
+      const earned = 1 + Math.floor(state.level / 3)
       state.coins += earned
-      addXp(1)
+      state.totalClicks++
       
-      // Visual feedback
+      // Show coin popup
+      const popup = document.createElement('div')
+      popup.className = 'coin-popup'
+      popup.textContent = '+' + earned
+      popup.style.left = x + 'px'
+      popup.style.top = y + 'px'
+      viewport.appendChild(popup)
+      setTimeout(() => popup.remove(), 800)
+      
+      // Happy reaction
       blob.classList.add('happy')
-      setTimeout(() => blob.classList.remove('happy'), 500)
-      
-      // Floating coin
-      showFloatingCoin(earned)
+      setTimeout(() => blob.classList.remove('happy'), 300)
       
       updateUI()
     }
     
-    function showFloatingCoin(amount) {
-      const coin = document.createElement('div')
-      coin.className = 'floating-coin'
-      coin.textContent = `+${amount} 🪙`
-      coin.style.left = (Math.random() * 100 + 150) + 'px'
-      coin.style.top = (Math.random() * 50 + 150) + 'px'
-      document.body.appendChild(coin)
-      setTimeout(() => coin.remove(), 1000)
-    }
-    
     window.feed = () => {
-      if (state.coins < 10) return
-      state.coins -= 10
-      state.hunger = Math.min(100, state.hunger + 30)
-      addXp(5)
-      blobReact()
+      const cost = getFeedCost()
+      if (state.coins < cost) return
+      
+      state.coins -= cost
+      addXP(15)
+      
+      // Eating animation
+      blob.classList.add('eating')
+      setTimeout(() => blob.classList.remove('eating'), 1500)
+      
       updateUI()
       saveGame()
     }
     
     window.play = () => {
-      if (state.coins < 15) return
-      state.coins -= 15
-      state.happiness = Math.min(100, state.happiness + 25)
-      state.hunger = Math.max(0, state.hunger - 5) // Playing makes hungry
-      addXp(8)
-      blobReact()
-      updateUI()
-      saveGame()
-    }
-    
-    window.treat = () => {
-      if (state.coins < 25) return
-      state.coins -= 25
-      state.hunger = Math.min(100, state.hunger + 15)
-      state.happiness = Math.min(100, state.happiness + 20)
-      addXp(12)
-      blobReact()
-      updateUI()
-      saveGame()
-    }
-    
-    window.sparkle = () => {
-      if (state.coins < 50) return
-      state.coins -= 50
-      state.happiness = Math.min(100, state.happiness + 40)
-      addXp(25)
-      blobReact()
+      const cost = getPlayCost()
+      if (state.coins < cost) return
       
-      // Extra sparkle effect
-      blob.style.boxShadow = `0 0 60px ${state.color}`
-      setTimeout(() => {
-        blob.style.boxShadow = getStage() === 6 ? `0 0 40px ${state.color}` : 'none'
-      }, 1000)
+      state.coins -= cost
+      addXP(25)
+      
+      // Play animation
+      blob.classList.add('playing')
+      setTimeout(() => blob.classList.remove('playing'), 2000)
       
       updateUI()
       saveGame()
     }
     
-    function blobReact() {
-      blob.classList.add('happy')
-      setTimeout(() => blob.classList.remove('happy'), 500)
+    function getFeedCost() {
+      return 5 + state.level * 2
+    }
+    
+    function getPlayCost() {
+      return 10 + state.level * 3
+    }
+    
+    function getXPNeeded() {
+      return Math.floor(100 * Math.pow(1.3, state.level - 1))
+    }
+    
+    function getStage() {
+      for (let i = STAGES.length - 1; i >= 0; i--) {
+        if (state.level >= STAGES[i]) return i + 1
+      }
+      return 1
+    }
+    
+    function addXP(amount) {
+      state.xp += amount
+      
+      const needed = getXPNeeded()
+      if (state.xp >= needed) {
+        state.xp -= needed
+        state.level++
+        showLevelUp()
+      }
+      
+      updateUI()
+    }
+    
+    function showLevelUp() {
+      const stage = getStage()
+      document.getElementById('new-level').textContent = `LV.${state.level}`
+      document.getElementById('levelup-text').textContent = 
+        state.level === STAGES[stage - 1] 
+          ? `EVOLVED TO ${STAGE_NAMES[stage - 1]} BLOB!` 
+          : 'YOUR BLOB GREW STRONGER!'
+      document.getElementById('levelup-modal').classList.add('show')
+      saveGame()
+    }
+    
+    window.closeLevelUp = () => {
+      document.getElementById('levelup-modal').classList.remove('show')
+    }
+    
+    function updateUI() {
+      // Name & level
+      document.getElementById('pet-name').textContent = state.name || 'BLOBBY'
+      document.getElementById('level-num').textContent = state.level
+      
+      // Blob appearance
+      const stage = getStage()
+      blob.className = `blob stage-${stage}`
+      blobBody.style.background = state.color
+      
+      // Coins bar (max out at 999 for display)
+      const coinsPercent = Math.min(100, (state.coins / (100 + state.level * 50)) * 100)
+      document.getElementById('coins-bar').style.width = coinsPercent + '%'
+      document.getElementById('coins-value').textContent = state.coins
+      
+      // XP bar
+      const xpNeeded = getXPNeeded()
+      const xpPercent = (state.xp / xpNeeded) * 100
+      document.getElementById('xp-bar').style.width = xpPercent + '%'
+      document.getElementById('xp-value').textContent = `${state.xp}/${xpNeeded}`
+      
+      // Costs
+      document.getElementById('feed-cost').textContent = getFeedCost() + ' coins'
+      document.getElementById('play-cost').textContent = getPlayCost() + ' coins'
+      
+      // Button states
+      document.getElementById('feed-btn').disabled = state.coins < getFeedCost()
+      document.getElementById('play-btn').disabled = state.coins < getPlayCost()
+      
+      // Level hint
+      const nextStage = STAGES.find(s => s > state.level)
+      if (nextStage) {
+        document.getElementById('level-hint').textContent = 
+          `EVOLVE AT LV.${nextStage}`
+      } else {
+        document.getElementById('level-hint').textContent = 'MAX EVOLUTION!'
+      }
     }
     
     async function saveGame() {
       if (!room) return
-      
-      showSaveStatus('saving', 'Saving...')
+      showSave('saving', 'SAVING...')
       try {
-        state.lastUpdate = Date.now()
         await room.save('pet', state)
-        showSaveStatus('saved', 'Saved ✓')
+        showSave('saved', 'SAVED!')
       } catch (e) {
-        showSaveStatus('error', 'Save failed')
+        showSave('error', 'SAVE FAILED')
       }
     }
     
-    function showSaveStatus(type, text) {
-      saveStatus.className = 'save-status ' + type
-      saveStatus.textContent = text
-      
+    function showSave(type, text) {
+      const el = document.getElementById('save-status')
+      el.className = 'save-indicator ' + type
+      el.textContent = text
       if (type === 'saved') {
         setTimeout(() => {
-          saveStatus.textContent = 'Auto-saving enabled'
-          saveStatus.className = 'save-status'
+          el.textContent = 'AUTO-SAVE ON'
+          el.className = 'save-indicator'
         }, 2000)
       }
     }
