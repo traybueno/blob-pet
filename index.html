@@ -626,7 +626,10 @@
       setupColors()
       
       try {
-        room = await connect('blob-pet-saves', { gameId: 'blob-pet' })
+        room = await connect('blob-pet-saves', { 
+          gameId: 'blob-pet',
+          playerId: playerId
+        })
         
         const saved = await room.load('pet')
         if (saved) {
