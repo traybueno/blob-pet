@@ -626,8 +626,9 @@
       setupColors()
       
       try {
+        // gameId defaults to window.location.hostname (e.g., xyz.watchtower.host)
+        // This lets the dashboard track analytics correctly
         room = await connect('blob-pet-saves', { 
-          gameId: 'blob-pet',
           playerId: playerId
         })
         
