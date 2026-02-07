@@ -132,8 +132,8 @@
     /* Pixel blob */
     .blob {
       position: absolute;
-      width: 48px;
-      height: 40px;
+      width: 64px;
+      height: 64px;
       transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
     }
     
@@ -180,16 +180,113 @@
       border-radius: 0 0 6px 6px;
     }
     
-    /* Blob states */
-    .blob.eating .blob-mouth {
+    /* Evolution parts - hidden by default */
+    .blob-bump, .blob-leg, .blob-arm, .blob-antenna, .blob-crown { 
+      display: none; 
+      position: absolute;
+    }
+    
+    /* Stage 2: Bump on head */
+    .blob.stage-2 .blob-bump,
+    .blob.stage-3 .blob-bump,
+    .blob.stage-4 .blob-bump,
+    .blob.stage-5 .blob-bump,
+    .blob.stage-6 .blob-bump {
+      display: block;
+      width: 16px;
+      height: 12px;
+      border-radius: 50%;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: inherit;
+    }
+    
+    /* Stage 3: Legs */
+    .blob.stage-3 .blob-leg,
+    .blob.stage-4 .blob-leg,
+    .blob.stage-5 .blob-leg,
+    .blob.stage-6 .blob-leg {
+      display: block;
+      width: 8px;
+      height: 10px;
+      background: inherit;
+      border-radius: 0 0 4px 4px;
+      bottom: -8px;
+    }
+    .blob-leg.left { left: 8px; }
+    .blob-leg.right { right: 8px; }
+    
+    /* Stage 4: Arms */
+    .blob.stage-4 .blob-arm,
+    .blob.stage-5 .blob-arm,
+    .blob.stage-6 .blob-arm {
+      display: block;
       width: 10px;
       height: 8px;
+      background: inherit;
       border-radius: 50%;
-      animation: munch 0.3s ease-in-out infinite;
+      top: 12px;
+    }
+    .blob-arm.left { left: -6px; }
+    .blob-arm.right { right: -6px; }
+    
+    /* Stage 5: Antennae */
+    .blob.stage-5 .blob-antenna,
+    .blob.stage-6 .blob-antenna {
+      display: block;
+      width: 4px;
+      height: 12px;
+      background: inherit;
+      border-radius: 4px;
+      top: -14px;
+    }
+    .blob-antenna.left { left: 10px; transform: rotate(-15deg); }
+    .blob-antenna.right { right: 10px; transform: rotate(15deg); }
+    .blob-antenna::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -2px;
+      width: 8px;
+      height: 8px;
+      background: inherit;
+      border-radius: 50%;
+    }
+    
+    /* Stage 6: Crown/Halo */
+    .blob.stage-6 .blob-crown {
+      display: block;
+      width: 24px;
+      height: 10px;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fbbf24;
+      clip-path: polygon(0% 100%, 15% 40%, 30% 100%, 50% 20%, 70% 100%, 85% 40%, 100% 100%);
+      animation: crownFloat 2s ease-in-out infinite;
+    }
+    
+    @keyframes crownFloat {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-3px); }
+    }
+    
+    /* Blob states */
+    .blob.eating .blob-body {
+      animation: munch 0.2s ease-in-out infinite;
+    }
+    .blob.eating .blob-mouth {
+      width: 12px;
+      height: 10px;
+      border-radius: 50%;
     }
     
     .blob.playing {
-      animation: bounce 0.4s ease-in-out infinite;
+      animation: playBounce 0.3s ease-in-out infinite;
+    }
+    .blob.playing .blob-body {
+      animation: playSquash 0.3s ease-in-out infinite;
     }
     
     .blob.happy .blob-mouth {
@@ -198,27 +295,58 @@
       border-radius: 0 0 12px 12px;
     }
     
-    /* Evolution sizes */
-    .blob.stage-1 { transform: scale(0.7); }
-    .blob.stage-2 { transform: scale(0.85); }
+    /* Size scaling per stage */
+    .blob.stage-1 { transform: scale(0.8); }
+    .blob.stage-2 { transform: scale(0.9); }
     .blob.stage-3 { transform: scale(1); }
-    .blob.stage-4 { transform: scale(1.15); }
-    .blob.stage-5 { transform: scale(1.3); }
-    .blob.stage-6 { transform: scale(1.5); }
+    .blob.stage-4 { transform: scale(1.1); }
+    .blob.stage-5 { transform: scale(1.2); }
+    .blob.stage-6 { transform: scale(1.3); }
     
     @keyframes blobIdle {
-      0%, 100% { transform: translateX(-50%) scaleY(1); }
-      50% { transform: translateX(-50%) scaleY(0.92); }
+      0%, 100% { transform: translateX(-50%) scaleY(1) scaleX(1); }
+      50% { transform: translateX(-50%) scaleY(0.92) scaleX(1.04); }
     }
     
     @keyframes munch {
-      0%, 100% { transform: translateX(-50%) scaleY(1); }
-      50% { transform: translateX(-50%) scaleY(0.5); }
+      0%, 100% { transform: translateX(-50%) scaleY(1) scaleX(1); }
+      50% { transform: translateX(-50%) scaleY(0.85) scaleX(1.1); }
     }
     
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    @keyframes playBounce {
+      0%, 100% { transform: translateY(0) scale(var(--stage-scale, 1)); }
+      50% { transform: translateY(-25px) scale(var(--stage-scale, 1)); }
+    }
+    
+    @keyframes playSquash {
+      0%, 100% { transform: translateX(-50%) scaleY(1) scaleX(1); }
+      25% { transform: translateX(-50%) scaleY(1.2) scaleX(0.85); }
+      75% { transform: translateX(-50%) scaleY(0.8) scaleX(1.15); }
+    }
+    
+    /* Feed animation - hearts float up */
+    .feed-heart {
+      position: absolute;
+      font-size: 16px;
+      pointer-events: none;
+      animation: heartFloat 1s ease-out forwards;
+    }
+    @keyframes heartFloat {
+      0% { opacity: 1; transform: translateY(0) scale(0.5); }
+      50% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
+    }
+    
+    /* Play animation - stars burst */
+    .play-star {
+      position: absolute;
+      font-size: 14px;
+      pointer-events: none;
+      animation: starBurst 0.8s ease-out forwards;
+    }
+    @keyframes starBurst {
+      0% { opacity: 1; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1) rotate(180deg); }
     }
     
     /* Click feedback */
@@ -397,10 +525,25 @@
       
       <div class="viewport" id="viewport" onclick="clickBlob(event)">
         <div class="blob stage-1" id="blob">
+          <!-- Crown (stage 6) -->
+          <div class="blob-crown"></div>
+          <!-- Antennae (stage 5+) -->
+          <div class="blob-antenna left"></div>
+          <div class="blob-antenna right"></div>
+          <!-- Main body -->
           <div class="blob-body" id="blob-body">
+            <!-- Bump (stage 2+) -->
+            <div class="blob-bump"></div>
+            <!-- Arms (stage 4+) -->
+            <div class="blob-arm left"></div>
+            <div class="blob-arm right"></div>
+            <!-- Face -->
             <div class="blob-eye left"><div class="blob-eye-shine"></div></div>
             <div class="blob-eye right"><div class="blob-eye-shine"></div></div>
             <div class="blob-mouth"></div>
+            <!-- Legs (stage 3+) -->
+            <div class="blob-leg left"></div>
+            <div class="blob-leg right"></div>
           </div>
         </div>
       </div>
@@ -529,8 +672,16 @@
       document.querySelectorAll('.color-opt').forEach(el => {
         el.classList.toggle('selected', el.dataset.color === color)
       })
-      blobBody.style.background = color
+      applyBlobColor(color)
       saveGame()
+    }
+    
+    function applyBlobColor(color) {
+      // Apply color to all blob parts
+      blobBody.style.background = color
+      document.querySelectorAll('.blob-bump, .blob-leg, .blob-arm, .blob-antenna').forEach(el => {
+        el.style.background = color
+      })
     }
     
     window.submitName = () => {
@@ -594,6 +745,19 @@
       blob.classList.add('eating')
       setTimeout(() => blob.classList.remove('eating'), 1500)
       
+      // Heart particles
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div')
+          heart.className = 'feed-heart'
+          heart.textContent = '❤️'
+          heart.style.left = (blobX + 20 + Math.random() * 24) + 'px'
+          heart.style.top = (blobY + 10) + 'px'
+          viewport.appendChild(heart)
+          setTimeout(() => heart.remove(), 1000)
+        }, i * 150)
+      }
+      
       updateUI()
       saveGame()
     }
@@ -608,6 +772,21 @@
       // Play animation
       blob.classList.add('playing')
       setTimeout(() => blob.classList.remove('playing'), 2000)
+      
+      // Star burst particles
+      const stars = ['⭐', '✨', '💫', '🌟']
+      for (let i = 0; i < 8; i++) {
+        const star = document.createElement('div')
+        star.className = 'play-star'
+        star.textContent = stars[Math.floor(Math.random() * stars.length)]
+        star.style.left = (blobX + 32) + 'px'
+        star.style.top = (blobY + 20) + 'px'
+        const angle = (i / 8) * Math.PI * 2
+        star.style.setProperty('--tx', Math.cos(angle) * 50 + 'px')
+        star.style.setProperty('--ty', Math.sin(angle) * 50 + 'px')
+        viewport.appendChild(star)
+        setTimeout(() => star.remove(), 800)
+      }
       
       updateUI()
       saveGame()
@@ -668,7 +847,7 @@
       // Blob appearance
       const stage = getStage()
       blob.className = `blob stage-${stage}`
-      blobBody.style.background = state.color
+      applyBlobColor(state.color)
       
       // Coins bar (max out at 999 for display)
       const coinsPercent = Math.min(100, (state.coins / (100 + state.level * 50)) * 100)
