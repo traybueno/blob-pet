@@ -626,10 +626,9 @@
       setupColors()
       
       try {
-        // gameId defaults to window.location.hostname (e.g., xyz.watchtower.host)
-        // This lets the dashboard track analytics correctly
         room = await connect('blob-pet-saves', { 
-          playerId: playerId
+          playerId: playerId,
+          gameId: 'blob-pet'  // Explicit so saves show up consistently
         })
         
         const saved = await room.load('pet')
